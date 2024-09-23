@@ -31,8 +31,14 @@ public class useDAO {
             try {
                 Connection conn = DriverManager.getConnection(url, username, passwd);
                 Statement smt = conn.createStatement();
+                String query1;
+                query1 = String.format("select id from students order by id limit 1 offset %d;", id - 1);
+                ResultSet rs = smt.executeQuery(query1);
                 String query;
-                query = String.format("delete from students order by id limit 1 offset %d - 1", id);
+                rs.next();
+                int index = rs.getInt("id") ;
+
+                query = String.format("delete from students where id = %d", index);
                 smt.executeUpdate(query);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
