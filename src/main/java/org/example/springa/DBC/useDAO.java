@@ -13,7 +13,20 @@ public class useDAO {
     private final String url = "jdbc:mysql://localhost:3306/users";
     public List<user> users = new ArrayList<user>();
 
-    public List<user> setuse() throws SQLException {
+    public void setUser(user user) {
+        try {
+            Connection conn = DriverManager.getConnection(url, username, passwd);
+            Statement smt = conn.createStatement();
+            String query;
+            query = String.format("insert into students (age, gender, name, salary)\n" +
+                    "values (%d, '%c', '%s', %f);", user.getAge(), user.getGender(), user.getName(), user.getSalary());
+            smt.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<user> getuse() throws SQLException {
         Connection conn = DriverManager.getConnection(url, username, passwd);
         try {
             Statement smt = conn.createStatement();
