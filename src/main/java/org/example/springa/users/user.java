@@ -5,6 +5,7 @@ public class user {
     private int age;
     private double salary;
     private char gender;
+    private int id;
     public user(){
 
     }
@@ -41,6 +42,14 @@ public class user {
 
     public char getGender() {
         return gender;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setGender(char gender) {

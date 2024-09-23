@@ -26,6 +26,22 @@ public class useDAO {
         }
     }
 
+    public void delUser(int id) {
+        try {
+            try {
+                Connection conn = DriverManager.getConnection(url, username, passwd);
+                Statement smt = conn.createStatement();
+                String query;
+                query = String.format("delete from students order by id limit 1 offset %d - 1", id);
+                smt.executeUpdate(query);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public List<user> getuse() throws SQLException {
         Connection conn = DriverManager.getConnection(url, username, passwd);
         try {

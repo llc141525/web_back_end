@@ -17,10 +17,17 @@ public class userController {
         useDAO rs = new useDAO();
         return rs.getuse();
     }
+
     @PostMapping("/postUser")
     public void createUser(@RequestBody user user) throws SQLException {
         useDAO rs = new useDAO();
         rs.setUser(user);
+    }
+
+    @PostMapping("/del")
+    public void deleteUser(@RequestParam("id") int id) throws SQLException {
+        useDAO rs = new useDAO();
+        rs.delUser(id);
     }
 
 //    @GetMapping("/user")
