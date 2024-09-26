@@ -5,9 +5,11 @@ public class user {
     private int age;
     private double salary;
     private char gender;
-    public user(){
 
+
+    public user(){
     }
+
     public user(String name, int age, double salary, char gender) {
         this.name = name;
         this.age = age;
@@ -42,7 +44,6 @@ public class user {
     public char getGender() {
         return gender;
     }
-
 
 
     public void setGender(char gender) {

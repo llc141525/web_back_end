@@ -1,6 +1,7 @@
 package org.example.springa.DBC;
 
 import org.example.springa.users.user;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,37 +14,61 @@ public class useDAO {
     private final String url = "jdbc:mysql://localhost:3306/users";
     public List<user> users = new ArrayList<user>();
 
-    public void setUser(user user) {
-        try {
-            Connection conn = DriverManager.getConnection(url, username, passwd);
-            Statement smt = conn.createStatement();
-            String query;
-            query = String.format("insert into students (age, gender, name, salary)\n" +
-                    "values (%d, '%c', '%s', %f);", user.getAge(), user.getGender(), user.getName(), user.getSalary());
-            smt.executeUpdate(query);
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, username, passwd);
+    }
+
+
+    public void setUser(@NotNull user user) {
+        String query = "insert into students(name, age, salary, gender) values (?,?,?,?)";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)
+        ) {
+            pstmt.setString(1, user.getName());
+            pstmt.setInt(2, user.getAge());
+            pstmt.setDouble(3, user.getSalary());
+            pstmt.setString(4, String.valueOf(user.getGender()));
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void delUser(int id) {
-        try {
-            try {
-                Connection conn = DriverManager.getConnection(url, username, passwd);
-                Statement smt = conn.createStatement();
-                String query1;
-                query1 = String.format("select id from students order by id limit 1 offset %d;", id - 1);
-                ResultSet rs = smt.executeQuery(query1);
-                String query;
-                rs.next();
-                int index = rs.getInt("id") ;
+//    public void delUser(int id) {
+//        try {
+//            try {
+//                Connection conn = DriverManager.getConnection(url, username, passwd);
+//                Statement smt = conn.createStatement();
+//                String query1;
+//                query1 = String.format("select id from students order by id limit 1 offset %d;", id - 1);
+//                ResultSet rs = smt.executeQuery(query1);
+//                String query;
+//                rs.next();
+//                int index = rs.getInt("id");
+//
+//                query = String.format("delete from students where id = %d", index);
+//                smt.executeUpdate(query);
+//            } catch (SQLException e) {
+//                throw new RuntimeException(e);
+//            }
+//        } catch (RuntimeException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
-                query = String.format("delete from students where id = %d", index);
-                smt.executeUpdate(query);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        } catch (RuntimeException e) {
+    public void delUser(int id) {
+        String findIdQuery = String.format("SELECT id FROM students ORDER BY id LIMIT 1 OFFSET %d;", id - 1);
+        String delByIdQuery = "DELETE FROM students WHERE id = ?;";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+        ) {
+            ResultSet res = stmt.executeQuery(findIdQuery);
+            res.next();
+            int index = res.getInt("id");
+            PreparedStatement pstmt = conn.prepareStatement(delByIdQuery);
+            pstmt.setInt(1, index);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
