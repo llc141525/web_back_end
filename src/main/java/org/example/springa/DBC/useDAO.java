@@ -18,7 +18,6 @@ public class useDAO {
         return DriverManager.getConnection(url, username, passwd);
     }
 
-
     public void setUser(@NotNull user user) {
         String query = "insert into students(name, age, salary, gender) values (?,?,?,?)";
         try (Connection conn = getConnection();
@@ -33,28 +32,6 @@ public class useDAO {
             throw new RuntimeException(e);
         }
     }
-
-//    public void delUser(int id) {
-//        try {
-//            try {
-//                Connection conn = DriverManager.getConnection(url, username, passwd);
-//                Statement smt = conn.createStatement();
-//                String query1;
-//                query1 = String.format("select id from students order by id limit 1 offset %d;", id - 1);
-//                ResultSet rs = smt.executeQuery(query1);
-//                String query;
-//                rs.next();
-//                int index = rs.getInt("id");
-//
-//                query = String.format("delete from students where id = %d", index);
-//                smt.executeUpdate(query);
-//            } catch (SQLException e) {
-//                throw new RuntimeException(e);
-//            }
-//        } catch (RuntimeException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 
     public void delUser(int id) {
         String findIdQuery = String.format("SELECT id FROM students ORDER BY id LIMIT 1 OFFSET %d;", id - 1);
@@ -73,28 +50,44 @@ public class useDAO {
         }
     }
 
-    public List<user> getuse() throws SQLException {
-        Connection conn = DriverManager.getConnection(url, username, passwd);
-        try {
-            Statement smt = conn.createStatement();
-            String query = "select * from students";
-            ResultSet res = smt.executeQuery(query);
+    public List<user> getUsers() {
+        String query = "SELECT * FROM students";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+        ) {
+            ResultSet res = stmt.executeQuery(query);
             while (res.next()) {
                 user us = new user();
-                int age = res.getInt("age");
-                char gender = res.getString("gender").charAt(0);
-                double salary = res.getDouble("salary");
-                String name = res.getString("name");
-//                int id = res.getInt("id");
-                us.setGender(gender);
-                us.setAge(age);
-                us.setSalary(salary);
-                us.setName(name);
+                us.setName(res.getString("name"));
+                us.setAge(res.getInt("age"));
+                us.setSalary(res.getDouble("salary"));
+                us.setGender(res.getString("gender").charAt(0));
                 users.add(us);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return users;
+    }
+
+    public void changeUser(int id, @NotNull user targetUs) {
+        String findId = String.format("SELECT id FROM students ORDER BY id LIMIT 1 OFFSET %d", id - 1);
+        String query = "UPDATE students SET name = ?, age = ?, salary=?, gender = ? where id= ?";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+        ) {
+            ResultSet res = stmt.executeQuery(findId);
+            res.next();
+            int index = res.getInt("id");
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, targetUs.getName());
+            pstmt.setInt(2, targetUs.getAge());
+            pstmt.setDouble(3, targetUs.getSalary());
+            pstmt.setString(4, String.valueOf(targetUs.getGender()));
+            pstmt.setInt(5, index);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

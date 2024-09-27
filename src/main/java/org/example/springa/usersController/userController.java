@@ -15,7 +15,7 @@ public class userController {
     @GetMapping("/user")
     public List<user> fetchAllUse() throws SQLException {
         useDAO rs = new useDAO();
-        return rs.getuse();
+        return rs.getUsers();
     }
 
     @PostMapping("/postUser")
@@ -28,6 +28,12 @@ public class userController {
     public void deleteUser(@RequestParam("id") int id) throws SQLException {
         useDAO rs = new useDAO();
         rs.delUser(id);
+    }
+
+    @PutMapping("/change/{id}")
+    public void changeUser(@PathVariable int  id, @RequestBody user user) {
+        useDAO rs = new useDAO();
+        rs.changeUser(id, user);
     }
 
 //    @GetMapping("/user")
