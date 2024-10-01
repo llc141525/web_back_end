@@ -17,6 +17,7 @@ public class userController {
         useDAO rs = new useDAO();
         return rs.getUsers();
     }
+    //
 
     @PostMapping("/postUser")
     public void createUser(@RequestBody user user) throws SQLException {
