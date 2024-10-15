@@ -37,8 +37,4 @@ public class userController {
         rs.changeUser(id, user);
     }
 
-//    @GetMapping("/user")
-//    public  List<user> showAllUse(){
-//
-//    }
 }
